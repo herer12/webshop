@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Testseite</title>
+</head>
+<body>
+<p>Your SessionId {{Session}}</p>
+<label for="username">Anmelden</label><input id="username" type="number" placeholder="Deine ID">
+<button onclick="sendUser()">Senden</button>
+<h1>Hallo {{USER}}</h1>
+<p>Nachricht: {{MESSAGE}}</p>
+<label for="productSearch">Suche</label><input id="productSearch" type="text" placeholder="Suche">
+<button onclick="keyWordSearch()">Senden</button>
+
+<table id="productTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Preis</th>
+        <th>Kaufen</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+
+    async function sendUser() {
+        const username = document.getElementById('username').value;
+        const body = "UserID="+ encodeURIComponent(username);
+         await fetch("/cgi-bin/Serialisation.bat?route=Login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: body
+        });
+    }
+
+    async function keyWordSearch() {
+        const name = document.getElementById("productSearch").value;
+        const body = "Product=" + encodeURIComponent(name);
+
+        const res = await fetch("/cgi-bin/Serialisation.bat?route=Keyword", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: body
+        });
+
+        const products = await res.json();  // JSON zurück
+        renderProducts(products);           // Tabelle aktualisieren
+    }
+
+    async function loadProducts() {
+        const res = await fetch("/cgi-bin/Serialisation.bat?route=products", {
+                method: "GET"
+            }
+        );
+        const products = await res.json();
+        renderProducts(products);
+    }
+
+    function renderProducts(products) {
+        const tbody = document.querySelector("#productTable tbody");
+        tbody.innerHTML = "";
+
+        products.forEach(p => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.price.toFixed(2).replace('.', ',')} €</td>
+                <td><button onclick="buyProduct(${p.id})">kaufen</button></td>
+            `;
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function buyProduct(id) {
+        const body = "productId=" + encodeURIComponent(id);
+        console.log(body);
+
+        const res = await fetch("/cgi-bin/Serialisation.bat?route=buy", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: body
+        });
+
+        const products = await res.json();  // JSON zurück
+        console.log(products);
+    }
+
+
+    loadProducts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+[
+  { "idProduct": 1, "name": "Apfel", "price": 0.99, "deleted": true},
+  { "idProduct": 2, "name": "Banane", "price": 1.19, "deleted": false},
+  { "idProduct": 3, "name": "Orange", "price": 0.79, "deleted": false }
+]

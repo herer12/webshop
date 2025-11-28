@@ -1,0 +1,97 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Cart {
+  + Cart(int): 
+  - productsInShoppingCart: LinkedList<Product>
+  - idCart: int
+  - totalPrice: double
+  + getProductsInShoppingCart(): LinkedList<Product>
+  + getIdCart(): int
+  + getTotalPrice(): double
+  + calculateTotalPrice(): void
+  + addProduct(Product): void
+}
+class CgiParameterController {
+  + CgiParameterController(): 
+  - params: Map<String, String>
+  - referer: String
+  - remoteAddr: String
+  - pathInfo: String
+  - contentType: String
+  - userAgent: String
+  - requestMethod: String
+  - host: String
+  - qryString: String
+  - contentLength: String
+  - contentFromBody: char[]
+  + getRequestMethod(): String
+  + getUserAgent(): String
+  + getContentFromBody(): char[]
+  + getReferer(): String
+  + getRemoteAddr(): String
+  + getContentLength(): String
+  + getPathInfo(): String
+  + getContentType(): String
+  + getHost(): String
+  - getEnvironment(String): String
+  + getQryString(): String
+  + getContentFromBodyAsString(): String
+  + getParam(String): String
+  - parseParameters(String): void
+  - getContentFromBody(int): void
+}
+interface DatabaseInterface << interface >> {
+  + getUsersWithName(String): User[]
+  + getAllProducts(): Product[]
+  + writeToDatabase(String, Object): boolean
+  + getUserWithId(int): User
+  + openConnection(): boolean
+  + getAllUsers(): User[]
+  + getCartForSpecifiedUser(int): Cart
+  + getProductsWithName(String): Product[]
+  + getProductWithId(int): Product
+}
+class HtmlTemplateHandler {
+  + HtmlTemplateHandler(Path): 
+  - html: String
+  + replace(String, String): void
+  + printHtml(): void
+}
+class Main {
+  + Main(): 
+  + main(String[]): void
+}
+class Product {
+  ~ Product(int, String, double): 
+  - name: String
+  - idProduct: int
+  - price: double
+  + getIdProduct(): int
+  + getPrice(): double
+  + getName(): String
+}
+class User {
+  ~ User(int, String, String, LocalDate, String): 
+  - idUser: int
+  - lastName: String
+  - sessionID: String
+  - firstName: String
+  - birthday: LocalDate
+  + getFirstName(): String
+  + getLastName(): String
+  + getIdUser(): int
+  + getSessionID(): String
+  + getBirthday(): LocalDate
+}
+
+Cart                   "1" *-[#595959,plain]-> "productsInShoppingCart\n*" Product                
+DatabaseInterface       -[#595959,dashed]->  Cart                   
+DatabaseInterface       -[#595959,dashed]->  Product                
+DatabaseInterface       -[#595959,dashed]->  User                   
+Main                    -[#595959,dashed]->  CgiParameterController : "«create»"
+Main                    -[#595959,dashed]->  HtmlTemplateHandler    : "«create»"
+@enduml
