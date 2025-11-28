@@ -1,9 +1,5 @@
 package InfiFirstTry.database.connectionClasses;
 
-import InfiFirstTry.model.Product;
-import InfiFirstTry.model.User;
-import InfiFirstTry.service.SessionController;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
