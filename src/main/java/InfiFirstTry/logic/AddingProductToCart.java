@@ -24,9 +24,6 @@ public class AddingProductToCart {
     public void start() throws IOException {
         AddingProductInCartController addingProductInCartController = new AddingProductInCartController(cgiParameterController);
         String id =addingProductInCartController.getIdProduct();
-
-
-
         Product p = productRepository.getProductWithId(Integer.parseInt(id));
         User u =userRepository.getUserWithId(1);
 

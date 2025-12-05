@@ -6,8 +6,7 @@
 </head>
 <body>
 <p>Your SessionId {{Session}}</p>
-<label for="username">Anmelden</label><input id="username" type="number" placeholder="Deine ID">
-<button onclick="sendUser()">Senden</button>
+<button onclick="goToLoginPage()">Zum Login</button>
 <h1>Hallo {{USER}}</h1>
 <p>Nachricht: {{MESSAGE}}</p>
 <label for="productSearch">Suche</label><input id="productSearch" type="text" placeholder="Suche">
@@ -24,82 +23,76 @@
     </thead>
     <tbody></tbody>
 </table>
-
 <script>
 
-    async function sendUser() {
-        const username = document.getElementById('username').value;
-        const body = "UserID="+ encodeURIComponent(username);
-         await fetch("/cgi-bin/Serialisation.bat?route=Login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: body
-        });
-    }
+  async function goToLoginPage() {
+      await fetch("/cgi-bin/Login.bat", {
+          method: "GET",
+      });
+  }
 
-    async function keyWordSearch() {
-        const name = document.getElementById("productSearch").value;
-        const body = "Product=" + encodeURIComponent(name);
+  async function keyWordSearch() {
+    const name = document.getElementById("productSearch").value;
+    const body = "Product=" + encodeURIComponent(name);
 
-        const res = await fetch("/cgi-bin/Serialisation.bat?route=Keyword", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: body
-        });
+    const res = await fetch("/cgi-bin/Serialisation.bat?route=Keyword", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: body
+    });
 
-        const products = await res.json();  // JSON zurück
-        renderProducts(products);           // Tabelle aktualisieren
-    }
+    const products = await res.json();  // JSON zurück
+    renderProducts(products);           // Tabelle aktualisieren
+  }
 
-    async function loadProducts() {
-        const res = await fetch("/cgi-bin/Serialisation.bat?route=products", {
-                method: "GET"
-            }
-        );
-        const products = await res.json();
-        renderProducts(products);
-    }
+  async function loadProducts() {
+    const res = await fetch("/cgi-bin/Serialisation.bat?route=products", {
+        method: "GET"
+      }
+    );
+    const products = await res.json();
+    renderProducts(products);
+  }
 
-    function renderProducts(products) {
-        const tbody = document.querySelector("#productTable tbody");
-        tbody.innerHTML = "";
+  function renderProducts(products) {
+    const tbody = document.querySelector("#productTable tbody");
+    tbody.innerHTML = "";
 
-        products.forEach(p => {
-            const tr = document.createElement("tr");
+    products.forEach(p => {
+      const tr = document.createElement("tr");
 
-            tr.innerHTML = `
+      tr.innerHTML = `
                 <td>${p.id}</td>
                 <td>${p.name}</td>
                 <td>${p.price.toFixed(2).replace('.', ',')} €</td>
                 <td><button onclick="buyProduct(${p.id})">kaufen</button></td>
             `;
 
-            tbody.appendChild(tr);
-        });
-    }
+      tbody.appendChild(tr);
+    });
+  }
 
-    async function buyProduct(id) {
-        const body = "productId=" + encodeURIComponent(id);
-        console.log(body);
+  async function buyProduct(id) {
+    const body = "productId=" + encodeURIComponent(id);
+    console.log(body);
 
-        const res = await fetch("/cgi-bin/Serialisation.bat?route=buy", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: body
-        });
+    const res = await fetch("/cgi-bin/Serialisation.bat?route=buy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: body
+    });
 
-        const products = await res.json();  // JSON zurück
-        console.log(products);
-    }
+    const products = await res.json();  // JSON zurück
+    console.log(products);
+  }
 
 
-    loadProducts();
+  loadProducts();
+
 </script>
 
 </body>

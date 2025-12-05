@@ -72,6 +72,9 @@ public class LogicForSearchingForProducInList {
         if (route == null || route.isEmpty()) {
             route = "index"; // Standard route
         }
+        if ( SessionController.getValueAfterKeyword(cgiParameterController.getSessionId(), "UserId") != null) {
+            cgiParameterController.setLoggedIn(true);
+        }
 
         switch (route) {
             case "Login":
@@ -114,39 +117,20 @@ public class LogicForSearchingForProducInList {
         tpl.printHtml();
     }
 
-    void login() throws IOException {
-        if (getUser() != null) {
+    void login() throws Exception {
+        if (cgiParameterController.isLoggedIn()) {
+            //Profil Page hier
             return;
         }
-        LoginController loginController = new LoginController(cgiParameterController);
-        User user = userRepository.getUserWithId(Integer.parseInt(loginController.getIdUser()));
-        if (user == null){
-            return;
-        }
-        SessionController.save(cgiParameterController.getSessionId(),"UserId:"+user.getIdUser() );
+        System.out.flush();
+        System.out.close();
+        System.out.println("Content-Type: text/html; charset=UTF-8");
+        System.out.println();
+
+
+
     }
 
-    User getUser() throws IOException {
-        String sessionId = SessionController.load(cgiParameterController.getSessionId());
-        String result;
-        if (sessionId == null) {
-            return  null;
-        }
-        int startIndex = sessionId.indexOf("UserId:");
-
-        if (startIndex != -1) {
-            startIndex += "UserId:".length();
-            int endIndex = sessionId.indexOf(";", startIndex);
-            if (endIndex != -1) {
-                result = sessionId.substring(startIndex, endIndex);
-            } else {
-                result = sessionId.substring(startIndex);
-            }
-        }else {
-            return null;
-        }
-        return userRepository.getUserWithId(Integer.parseInt(result));
-    }
 
 
 }

@@ -22,6 +22,15 @@ public class CgiParameterController {
     private String contentType;
     private String contentLength;
     private String pathInfo;
+    private boolean loggedIn  = false;
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 
     public String getSessionId() {
         return sessionId;

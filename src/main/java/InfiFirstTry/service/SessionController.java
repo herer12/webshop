@@ -1,14 +1,9 @@
 package InfiFirstTry.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Random;
 
 public class SessionController {
@@ -39,6 +34,8 @@ public class SessionController {
 
 
     public static void save(String sessionId, String data) throws IOException {
+
+
         Files.write(
                 Paths.get("DummyData/SessionIDS/" + sessionIdSavingPlace + sessionId+".txt"),
                 data.getBytes(StandardCharsets.UTF_8)   // <-- Java 8 braucht byte[]
@@ -46,9 +43,38 @@ public class SessionController {
     }
 
     public static String load(String sessionId) throws IOException {
-        byte[] bytes = Files.readAllBytes(Paths.get("DummyData/SessionIDS/" + sessionIdSavingPlace + sessionId+ ".txt"));
+        byte[] bytes;
+        try {
+            bytes = Files.readAllBytes(Paths.get("DummyData/SessionIDS/" + SessionController.sessionIdSavingPlace + sessionId + ".txt"));
+        }catch (Exception ignored){
+            return null;
+        }
         if (new String(bytes, StandardCharsets.UTF_8).isEmpty()) return null;
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public static String getValueAfterKeyword(String keyword,  String sessionId) throws IOException {
+        String fileContent = SessionController.load(sessionId);
+        String result;
+        if (fileContent == null) {
+            return  null;
+        }
+        fileContent = fileContent.toLowerCase();
+        keyword = keyword.toLowerCase()+":";
+        int startIndex = fileContent.indexOf(keyword);
+
+        if (startIndex != -1) {
+            startIndex += keyword.length();
+            int endIndex = fileContent.indexOf(";", startIndex);
+            if (endIndex != -1) {
+                result = fileContent.substring(startIndex, endIndex);
+            } else {
+                result = fileContent.substring(startIndex);
+            }
+        }else {
+            return null;
+        }
+        return result;
     }
 
 }
