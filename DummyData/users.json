@@ -4,14 +4,24 @@
     "firstName": "Max",
     "lastName": "Mustermann",
     "birthday": "1990-05-10",
-    "sessionID": "SESSION123"
+    "sessionID": "SESSION123",
+    "deleted": false
   },
   {
     "idUser": 2,
     "firstName": "Erika",
     "lastName": "Musterfrau",
     "birthday": "1995-03-20",
-    "sessionID": "SESSION456"
+    "sessionID": "SESSION456",
+    "deleted": false
+  },
+  {
+    "idUser": 3,
+    "firstName": "axe",
+    "lastName": "Mustermann",
+    "birthday": "1990-05-10",
+    "sessionID": "SESSION123",
+    "deleted": true
   }
 ]
 
