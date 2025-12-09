@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 
 public class ServerSetup {
     public static void main(String[] args) throws Exception {
+
         UserRepository userRepository;
         ProductRepository productRepository;
         CartRepository cartRepository;
@@ -22,10 +23,10 @@ public class ServerSetup {
 
         switch (ConfigHandling.getDataBaseScheme()) {
             case "MySQL":
-                // TODO: MySQL-Implementierung
+                //  MySQL-Implementierung
                 throw new UnsupportedOperationException("MySQL noch nicht implementiert");
             case "PostgreSQL":
-                // TODO: PostgreSQL-Implementierung
+                // PostgreSQL-Implementierung
                 throw new UnsupportedOperationException("PostgreSQL noch nicht implementiert");
             default:
                 userRepository = new DummyDataUserRepo();
@@ -34,15 +35,17 @@ public class ServerSetup {
                 break;
         }
 
+
+
+
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        // Router initialisieren (MIT productRepository!)
-        Router.registerRoutes(server, productRepository);
+
+        Router.registerRoutes(server, productRepository, userRepository, cartRepository,cgiParameterController);
 
         server.setExecutor(null);
         server.start();
 
-        System.out.println("🚀 Shop-Server läuft auf http://localhost:8080");
-        System.out.println("📄 Öffne im Browser: http://localhost:8080/");
+        System.out.println("Shop-Server läuft auf http://localhost:8080");
     }
 }

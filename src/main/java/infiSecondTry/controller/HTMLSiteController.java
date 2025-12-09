@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class StaticFileHandler implements HttpHandler {
+public class HTMLSiteController implements HttpHandler {
 
     private static final String WEB_ROOT = "WebFiles";
 
@@ -20,6 +20,9 @@ public class StaticFileHandler implements HttpHandler {
         // Root -> index.html
         if (path.equals("/")) {
             path = "/index.html";
+        }
+        if (path.equals("/login")) {
+            path = "/login.html";
         }
 
 
