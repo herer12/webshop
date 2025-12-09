@@ -1,4 +1,4 @@
-package InfiFirstTry.database.connectionClasses;
+package InfiSecondTry.database.dummyData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

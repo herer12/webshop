@@ -26,9 +26,7 @@
 <script>
 
   async function goToLoginPage() {
-      await fetch("/cgi-bin/Login.bat", {
-          method: "GET",
-      });
+      window.location.href="http://localhost/cgi-bin/Login.bat";
   }
 
   async function keyWordSearch() {

@@ -1,4 +1,4 @@
-package InfiFirstTry.model;
+package InfiSecondTry.model;
 
 public class Product {
     //All in Database

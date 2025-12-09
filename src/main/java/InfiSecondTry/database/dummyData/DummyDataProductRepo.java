@@ -1,8 +1,8 @@
-package InfiFirstTry.database.dummyDataRepo;
+package InfiSecondTry.database.dummyData;
 
-import InfiFirstTry.database.ProductRepository;
-import InfiFirstTry.database.connectionClasses.DummyDataConnection;
-import InfiFirstTry.model.Product;
+
+import InfiSecondTry.database.ProductRepository;
+import InfiSecondTry.model.Product;
 
 import java.util.LinkedList;
 

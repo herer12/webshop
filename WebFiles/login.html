@@ -52,16 +52,21 @@
 </div>
 
 <script>
-  function login() {
-    const inputId = document.getElementById("userid").value;
-
-    // Beispiel: gültige IDs (später kannst du Benutzername & Passwort nutzen)
-    const validIds = [1001, 2002, 3003];
-
-    if (validIds.includes(parseInt(inputId))) {
-      document.getElementById("result").innerText = "Erfolgreich eingeloggt!";
-      document.getElementById("result").style.color = "green";
-    } else {
+  async function login() {
+    const user = document.getElementById("userid").value;
+    const body = "UserID="+encodeURIComponent(user);
+    const res = await fetch("/cgi-bin/Login.bat?route=login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: body
+    });
+    let products = res.ok;
+    console.log(products);
+    if (products){
+      window.location.href="http://localhost/cgi-bin/Serialisation.bat";
+    }else {
       document.getElementById("result").innerText = "Ungültige User‑ID";
       document.getElementById("result").style.color = "red";
     }

@@ -1,4 +1,4 @@
-package InfiFirstTry.model;
+package InfiSecondTry.model;
 
 import java.util.LinkedList;
 
