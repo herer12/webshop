@@ -1,4 +1,4 @@
-package infiSecondTry.logic;
+package infiSecondTry.service;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
