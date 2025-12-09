@@ -1,5 +1,6 @@
 package infiSecondTry.service;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -18,7 +19,7 @@ public class CgiParameterController {
         return System.getenv(key);
     }
 
-    public CgiParameterController() {
+    public CgiParameterController() throws IOException {
 
         //Session
         String cookieHeader = getEnvironment("HTTP_COOKIE");
@@ -33,7 +34,9 @@ public class CgiParameterController {
 
         if (newSession) {
             System.out.println("Set-Cookie: SESSIONID=" + sessionId + "; Path=/; HttpOnly");
+            SessionController.save(sessionId, "");
         }
+
 
 
         //Get

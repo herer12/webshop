@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 public class SessionController {
@@ -13,15 +15,11 @@ public class SessionController {
     /** Generates a number that is put behind sessionIDSavingPlace to create a txt File
      * */
     public static String generateSessionId() {
-
-        Random random = new Random();
-        long randomBytes;
-
-        do {
-            randomBytes = random.nextInt(1000000);
-        } while (!Files.notExists(Paths.get( sessionIdSavingPlace + randomBytes + ".txt")));
-        return Long.toString(randomBytes);
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
+
 
     /**Gets the Session id from the Cookie Header
       * @param cookieHeader from the cgi parameter
@@ -58,7 +56,7 @@ public class SessionController {
      * @param sessionId Session Data to get the Content from
      * @return Content of session
      */
-    public static String load(String sessionId) {
+    public static String load(String sessionId) throws IOException {
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(Paths.get( sessionIdSavingPlace + sessionId + ".txt"));
@@ -69,7 +67,7 @@ public class SessionController {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public static String getValueAfterKeyword(String keyword,  String sessionId) {
+    public static String getValueAfterKeyword(String keyword,  String sessionId) throws IOException {
         String fileContent = SessionController.load(sessionId);
         String result;
         if (fileContent == null) {

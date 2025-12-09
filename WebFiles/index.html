@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produktübersicht</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .search-box {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-box input {
+            padding: 12px 20px;
+            width: 100%;
+            max-width: 500px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+
+        .product-id {
+            color: #999;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .product-price::before {
+            content: '€ ';
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            margin-top: 50px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .stats {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .no-products {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛍️ Produktübersicht</h1>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Produkte durchsuchen..." onkeyup="filterProducts()">
+    </div>
+
+    <div class="stats" id="stats">Lade Produkte...</div>
+
+    <div id="productsContainer">
+        <div class="loading">⏳ Produkte werden geladen...</div>
+    </div>
+</div>
+
+<script>
+    let allProducts = [];
+
+    // Produkte beim Laden der Seite abrufen
+    window.addEventListener('DOMContentLoaded', () => {
+        loadProducts();
+    });
+
+    // Produkte von API laden
+    async function loadProducts() {
+        try {
+            const response = await fetch('/api/products');
+
+            if (!response.ok) {
+                throw new Error('Fehler beim Laden der Produkte');
+            }
+
+            allProducts = await response.json();
+            displayProducts(allProducts);
+            updateStats(allProducts.length);
+
+        } catch (error) {
+            console.error('Fehler:', error);
+            document.getElementById('productsContainer').innerHTML =
+                '<div class="error">❌ Fehler beim Laden der Produkte: ' + error.message + '</div>';
+        }
+    }
+
+    // Produkte anzeigen
+    function displayProducts(products) {
+        const container = document.getElementById('productsContainer');
+
+        if (products.length === 0) {
+            container.innerHTML = '<div class="no-products">Keine Produkte gefunden</div>';
+            return;
+        }
+
+        container.innerHTML = '<div class="products-grid">' +
+            products.map(product => `
+                    <div class="product-card" onclick="showProductDetails(${product.idProduct})">
+                        <div class="product-id">ID: ${product.idProduct}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toFixed(2)}</div>
+                    </div>
+                `).join('') +
+            '</div>';
+    }
+
+    // Statistik aktualisieren
+    function updateStats(count) {
+        document.getElementById('stats').textContent =
+            `📦 ${count} ${count === 1 ? 'Produkt' : 'Produkte'} verfügbar`;
+    }
+
+    // Produkte filtern
+    function filterProducts() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allProducts.filter(p =>
+            p.name.toLowerCase().includes(searchTerm)
+        );
+        displayProducts(filtered);
+        updateStats(filtered.length);
+    }
+
+    // Produktdetails anzeigen
+    function showProductDetails(id) {
+        const product = allProducts.find(p => p.idProduct === id);
+        if (product) {
+            alert(`Produkt: ${product.name}\nPreis: €${product.price.toFixed(2)}\nID: ${product.idProduct}`);
+        }
+    }
+</script>
+</body>
+</html>
