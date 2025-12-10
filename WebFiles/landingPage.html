@@ -58,7 +58,18 @@
 </head>
 <body>
 
-<h1>Alle Produkte</h1>
+<h1>Main</h1>
+
+<form class="Login-box" method="POST" action="/cgi-bin/Amazon.bat?route=login">
+    <button type="submit" id="loginButton">Login Page</button>
+</form>
+
+
+<form class="search-box" method="POST" action="/cgi-bin/Amazon.bat">
+    <input type="text" name="search" placeholder="Search..." id="searchInput">
+    <button type="submit" id="searchButton">Suchen</button>
+</form>
+
 
 <div class="product-grid">
     {{PRODUCTS}}

@@ -1,6 +1,7 @@
 package infiSecondTry.model;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class Cart {
 
@@ -58,6 +59,18 @@ public class Cart {
         return totalPrice;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cart)) return false;
+        Cart c = (Cart) o;
+        return this.idCart == c.idCart;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idCart);
+    }
 
 
 

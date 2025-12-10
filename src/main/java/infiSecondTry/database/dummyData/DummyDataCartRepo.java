@@ -18,22 +18,19 @@ public class DummyDataCartRepo implements CartRepository {
     @Override
     public Cart getCartForSpecifiedUser(int userID) {
 
-        User[] allUsers = dummyDataUserRepo.getAllUsers();
-        User userWithUserId = dummyDataUserRepo.getUserWithId(userID);
+        User user = dummyDataUserRepo.getUserWithId(userID);
+        if (user == null) return null;
+
         LinkedList<Cart> allCarts = connection.getList(cartItemLocation,Cart.class);
 
-        if (userWithUserId == null||allUsers == null) {
-            return null;
-        }
-
         for (Cart cart : allCarts){
-            if (cart.getIdCart() == userID){
+            if (cart.getIdCart() == userID) {   // <-- WICHTIG!
                 return cart;
             }
         }
-
         return null;
     }
+
 
     @Override
     public boolean addProductToCart(int userID, int productID) {

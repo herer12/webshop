@@ -18,18 +18,37 @@ public class Main {
         CgiParameterController cgiParameterController = new CgiParameterController();
 
         switch (ConfigHandling.getDataBaseScheme()) {
-            case "MySQL":
-                break;
-            case "PostgreSQL":
-                break;
+//            case "MySQL":
+//                break;
+//            case "PostgreSQL":
+//                break;
             default:
                 userRepository = new DummyDataUserRepo();
                 productRepository = new DummyDataProductRepo();
                 cartRepository = new DummyDataCartRepo();
-                LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository);
+                break;
+        }
+
+        String route = cgiParameterController.getParam("route");
+        if (route == null || route.isEmpty()) {
+            route = "index";
+        }
+
+        switch (route) {
+            case "buy":
+                AddingProductToCart addingProductToCart= new AddingProductToCart(userRepository,productRepository,cartRepository,cgiParameterController);
+                addingProductToCart.initatedAddingProductToCart();
+                break;
+            case "login":
+                LoginPage loginPage = new LoginPage(userRepository, productRepository, cartRepository, cgiParameterController);
+                loginPage.loginSite();
+                break;
+            default:
+                LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository,cgiParameterController);
                 landingPage.mainPage();
                 break;
         }
+
 
 
 
