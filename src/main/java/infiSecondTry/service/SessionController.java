@@ -2,94 +2,84 @@ package infiSecondTry.service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Random;
+import java.nio.file.*;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class SessionController {
 
-    private static final String sessionIdSavingPlace = "Data/SessionIDS/SessionIDS";
+    private static final String SESSION_DIR = "Data/SessionIDS/";
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    /** Generates a number that is put behind sessionIDSavingPlace to create a txt File
-     * */
-    public static String generateSessionId() {
-
-        Random random = new Random();
-        long randomBytes;
-
-        do {
-            randomBytes = random.nextInt(1000000);
-        } while (!Files.notExists(Paths.get( sessionIdSavingPlace + randomBytes + ".txt")));
-        return Long.toString(randomBytes);
+    static {
+        try {
+            Files.createDirectories(Paths.get(SESSION_DIR));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    /**Gets the Session id from the Cookie Header
-      * @param cookieHeader from the cgi parameter
-     * @return die Session Id or null if there is no Cookie Header
-     */
+    public static String generateSessionId() {
+        String id;
+        do {
+            id = Long.toHexString(RANDOM.nextLong());
+        } while (Files.exists(Paths.get(SESSION_DIR, id + ".txt")));
+        return id;
+    }
+
     public static String getSessionIdFromCookie(String cookieHeader) {
         if (cookieHeader == null) return null;
-        String[] cookies = cookieHeader.split(";");
-        for (String c : cookies) {
+
+        for (String c : cookieHeader.split(";")) {
             String[] pair = c.trim().split("=");
             if (pair.length == 2 && pair[0].equals("SESSIONID")) {
-                return pair[1];
+                return pair[1].trim();
             }
         }
         return null;
     }
 
-    /**Saves the Data in the Session File of the Session Id
-     * @param sessionId Session to save the Data to
-     * @param data What should be saved
-     */
-    public static void save(String sessionId, String data) throws IOException {
-        String textInFile = load(sessionId);
-        if (textInFile != null){
-            data = data + textInFile;
-        }
-        Files.write(
-                Paths.get( sessionIdSavingPlace + sessionId+".txt"),
-                data.getBytes(StandardCharsets.UTF_8)
-        );
-    }
+    public static Map<String, String> loadMap(String sessionId) throws IOException {
+        Path file = Paths.get(SESSION_DIR, sessionId + ".txt");
+        if (!Files.exists(file)) return new HashMap<>();
 
-    /**Loads the Content From the session File
-     * @param sessionId Session Data to get the Content from
-     * @return Content of session
-     */
-    public static String load(String sessionId) {
-        byte[] bytes;
-        try {
-            bytes = Files.readAllBytes(Paths.get( sessionIdSavingPlace + sessionId + ".txt"));
-        }catch (Exception ignored){
-            return null;
-        }
-        if (new String(bytes, StandardCharsets.UTF_8).isEmpty()) return null;
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
+        List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+        Map<String, String> map = new HashMap<>();
 
-    public static String getValueAfterKeyword(String keyword,  String sessionId) {
-        String fileContent = SessionController.load(sessionId);
-        String result;
-        if (fileContent == null) {
-            return  null;
-        }
-        fileContent = fileContent.toLowerCase();
-        keyword = keyword.toLowerCase()+":";
-        int startIndex = fileContent.indexOf(keyword);
-
-        if (startIndex != -1) {
-            startIndex += keyword.length();
-            int endIndex = fileContent.indexOf(";", startIndex);
-            if (endIndex != -1) {
-                result = fileContent.substring(startIndex, endIndex);
-            } else {
-                result = fileContent.substring(startIndex);
+        for (String line : lines) {
+            String[] parts = line.split("=", 2);
+            if (parts.length == 2) {
+                map.put(parts[0], parts[1]);
             }
-        }else {
-            return null;
         }
-        return result;
+        return map;
+    }
+
+    public static void saveMap(String sessionId, Map<String, String> map) throws IOException {
+        Path file = Paths.get(SESSION_DIR, sessionId + ".txt");
+        List<String> data = new ArrayList<>();
+
+        for (Map.Entry<String, String> e : map.entrySet()) {
+            data.add(e.getKey() + "=" + e.getValue());
+        }
+
+        Files.write(file, data, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public static void save(String sessionId, String key, String value) throws IOException {
+        Map<String, String> map = loadMap(sessionId);
+        map.put(key, value);
+        saveMap(sessionId, map);
+    }
+
+    public static String loadValue(String sessionId, String key) throws IOException {
+        return loadMap(sessionId).get(key);
+    }
+
+    public static void delete(String sessionId, String key) throws IOException {
+        Map<String, String> map = loadMap(sessionId);
+        map.remove(key);
+        saveMap(sessionId, map);
     }
 }

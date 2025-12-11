@@ -20,7 +20,7 @@ public class AddingProductToCart {
 
     void initatedAddingProductToCart() throws Exception {
         String sessionId = cgiParameterController.getSessionId();
-        String userID = SessionController.getValueAfterKeyword("UserID",sessionId);
+        String userID = SessionController.loadValue(sessionId, "UserId" );
 
         if(userID==null||userID.isEmpty()){
             LoginPage loginPage = new LoginPage(userRepository,productRepository,cartRepository,cgiParameterController);

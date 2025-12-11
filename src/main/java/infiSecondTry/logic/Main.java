@@ -35,6 +35,10 @@ public class Main {
         }
 
         switch (route) {
+            case "logout":
+                ProfilPage profilPage = new ProfilPage(userRepository,productRepository,cartRepository,cgiParameterController);
+                profilPage.logout();
+                break;
             case "buy":
                 AddingProductToCart addingProductToCart= new AddingProductToCart(userRepository,productRepository,cartRepository,cgiParameterController);
                 addingProductToCart.initatedAddingProductToCart();

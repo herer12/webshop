@@ -26,7 +26,7 @@ public class LoginPage {
     }
 
     void loginSite() throws Exception {
-        if (SessionController.getValueAfterKeyword("UserId", cgiParameterController.getSessionId()) == null){
+        if (SessionController.loadValue( cgiParameterController.getSessionId(),"UserId") == null){
             String userId = cgiParameterController.getParam("userId");
             if (userId == null || userId.isEmpty()||userId.equals("0")) {
                 HtmlTemplateHandler htmlTemplateHandler = new HtmlTemplateHandler("login.html");
@@ -39,14 +39,13 @@ public class LoginPage {
                 htmlTemplateHandler.printHtml();
                 return;
             }
-            SessionController.save(cgiParameterController.getSessionId(),"UserId:"+userId);
+            SessionController.save(cgiParameterController.getSessionId(),"UserId",userId);
             LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository,cgiParameterController);
             landingPage.mainPage();
             return;
         }
-        //Todo: Userverwaltung(Konto,Ausloggen usw.)
-        LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository,cgiParameterController);
-        landingPage.mainPage();
+        ProfilPage profilPage = new ProfilPage(userRepository,productRepository,cartRepository,cgiParameterController);
+        profilPage.profilSite();
 
     }
 
