@@ -1,8 +1,13 @@
 package infiSecondTry.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +19,14 @@ public class CgiParameterController {
     private final Map<String, String> params = new HashMap<>();
     private char[] contentFromBody = null;
 
+    private static final String CLEANUP_TIMESTAMP_FILE = "Data/SessionIDS/lastCleanup.txt";
+    private static final long CLEANUP_INTERVAL = 30 * 60 * 1000; // 30 Minuten
+
     private String getEnvironment(String key) {
         return System.getenv(key);
     }
 
-    public CgiParameterController() {
+    public CgiParameterController() throws IOException {
 
         //Session
         String cookieHeader = getEnvironment("HTTP_COOKIE");
@@ -34,6 +42,8 @@ public class CgiParameterController {
         if (newSession) {
             System.out.println("Set-Cookie: SESSIONID=" + sessionId + "; Path=/; HttpOnly");
         }
+
+        triggerCleanupIfNeeded();
 
 
         //Get
@@ -122,4 +132,31 @@ public class CgiParameterController {
         return sessionId;
     }
 
+    private static void triggerCleanupIfNeeded() {
+        try {
+            File tsFile = new File(CLEANUP_TIMESTAMP_FILE);
+
+            long now = System.currentTimeMillis();
+            long last = 0;
+
+            if (tsFile.exists()) {
+                String content = String.valueOf((Files.readAllLines(tsFile.toPath()))).trim();
+                if (!content.isEmpty()) {
+                    last = Long.parseLong(content);
+                }
+            }
+
+            // Wenn mehr als 30 Minuten seit dem letzten Cleanup vergangen sind
+            if (now - last > CLEANUP_INTERVAL) {
+
+                // Cleanup starten
+                Runtime.getRuntime().exec("Data/SessionIDS/SessionCleaner.bat");
+
+                // neuen Zeitstempel speichern
+                Files.write(tsFile.toPath(), Long.toString(now).getBytes());
+            }
+
+        } catch (Exception ignored) {
+        }
+    }
 }

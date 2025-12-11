@@ -7,34 +7,37 @@ import java.io.File;
 import java.util.LinkedList;
 
 public class DummyDataConnection {
+
     private static final String dummyDataSavingPlace = "Data/DummyData/";
-    private static File externalJson;
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
-    private static void fileManager(String item) {
+    public DummyDataConnection() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+    }
 
-        externalJson = new File(dummyDataSavingPlace + item);
-
+    private File getFile(String item) {
+        return new File(dummyDataSavingPlace + item);
     }
 
     public <T> LinkedList<T> getList(String location, Class<T> clazz) {
-        LinkedList<T> list = null;
         try {
-            fileManager(location);
-            mapper.registerModule(new JavaTimeModule());
-            list = mapper.readValue(externalJson,
-                    mapper.getTypeFactory().constructCollectionType(LinkedList.class, clazz));
+            File jsonFile = getFile(location);
+            return mapper.readValue(
+                    jsonFile,
+                    mapper.getTypeFactory().constructCollectionType(LinkedList.class, clazz)
+            );
         } catch (Exception e) {
             e.printStackTrace();
+            return new LinkedList<>();  // wichtig!
         }
-        return list;
     }
 
-    public static <T> void saveChanges(LinkedList<T> objects, String savingPlace){
+    public static <T> void saveChanges(LinkedList<T> objects, String location) {
         try {
-            fileManager(savingPlace);
+            ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
-            mapper.writeValue(externalJson, objects);
+            mapper.writeValue(new File(dummyDataSavingPlace + location), objects);
         } catch (Exception e) {
             e.printStackTrace();
         }

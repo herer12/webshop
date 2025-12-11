@@ -2,9 +2,12 @@ package infiSecondTry.database.dummyData;
 
 import infiSecondTry.database.CartRepository;
 import infiSecondTry.model.Cart;
+import infiSecondTry.model.CartItem;
 import infiSecondTry.model.Product;
 import infiSecondTry.model.User;
+import infiSecondTry.service.SessionController;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class DummyDataCartRepo implements CartRepository {
@@ -24,7 +27,7 @@ public class DummyDataCartRepo implements CartRepository {
         LinkedList<Cart> allCarts = connection.getList(cartItemLocation,Cart.class);
 
         for (Cart cart : allCarts){
-            if (cart.getIdCart() == userID) {   // <-- WICHTIG!
+            if (cart.getIdCart() == userID) {
                 return cart;
             }
         }
@@ -34,51 +37,78 @@ public class DummyDataCartRepo implements CartRepository {
 
     @Override
     public boolean addProductToCart(int userID, int productID) {
-        LinkedList <Cart> allCarts = connection.getList(cartItemLocation,Cart.class);
+
+        LinkedList<Cart> allCarts = connection.getList(cartItemLocation, Cart.class);
         Product productToAdd = dummyDataProductRepo.getProductWithId(productID);
         Cart cartToAddTo = getCartForSpecifiedUser(userID);
 
-        if (cartToAddTo == null||productToAdd == null){
-            return false;
+        if (cartToAddTo == null || productToAdd == null) return false;
+
+        boolean found = false;
+
+        for (CartItem item : cartToAddTo.getProductsInShoppingCart()) {
+            if (item.getProduct().equals(productToAdd)) {
+                item.increaseQuantity(1);
+                found = true;
+                break;
+            }
         }
 
-        if (!cartToAddTo.getProductsInShoppingCart().contains(productToAdd)){
-            cartToAddTo.addProduct(productToAdd);
-            allCarts.set(allCarts.indexOf(cartToAddTo), cartToAddTo);
+        if (!found) {
+            cartToAddTo.getProductsInShoppingCart().add(new CartItem(productToAdd, 1));
         }
 
-        try{
+        allCarts.set(allCarts.indexOf(cartToAddTo), cartToAddTo);
+
+        try {
             DummyDataConnection.saveChanges(allCarts, cartItemLocation);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
-
     }
+
 
 
     @Override
-    public boolean removeProductFromCart(int cartID, int productID) {
+    public boolean removeProductFromCart(int cartID, int productID) throws IOException {
 
-        LinkedList <Cart> allCarts = connection.getList(cartItemLocation,Cart.class);
+        LinkedList<Cart> allCarts = connection.getList(cartItemLocation, Cart.class);
         Product productToRemove = dummyDataProductRepo.getProductWithId(productID);
-        Cart cartToRemoveFrom = getCartForSpecifiedUser(cartID);
+        Cart cart = getCartForSpecifiedUser(cartID);
 
-        if (cartToRemoveFrom == null||productToRemove == null|| !cartToRemoveFrom.getProductsInShoppingCart().contains(productToRemove)){
-            return false;
+        if (cart == null || productToRemove == null) return false;
+
+        CartItem toRemove = null;
+
+        for (CartItem item : cart.getProductsInShoppingCart()) {
+            if (item.getProduct().equals(productToRemove)) {
+                toRemove = item;
+                break;
+            }
         }
 
-        cartToRemoveFrom.getProductsInShoppingCart().remove(productToRemove);
-        allCarts.remove(cartToRemoveFrom);
+        if (toRemove == null) return false;
 
-        try{
+        // Menge reduzieren
+        if (toRemove.getQuantity() > 1) {
+            toRemove.decreaseQuantity(1);
+        } else {
+            cart.getProductsInShoppingCart().remove(toRemove);
+        }
+
+        int index = allCarts.indexOf(cart);
+        allCarts.set(index, cart);
+
+        try {
             DummyDataConnection.saveChanges(allCarts, cartItemLocation);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
-
     }
+
+
 
 
 }

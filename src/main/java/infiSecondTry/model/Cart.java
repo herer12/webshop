@@ -20,7 +20,7 @@ public class Cart {
     /// I use Linked List because i want to add and delete a lot and if I want the Data i mostly want the whole Data
     /// So the slower access doesn't matter to me
     /**All products saved in the cart*/
-    private LinkedList<Product> productsInShoppingCart;
+    private LinkedList<CartItem> productsInShoppingCart;
 
 
     @Override
@@ -28,7 +28,7 @@ public class Cart {
         return "Cart{" +
                 "idCart=" + idCart +
                 ", productsInShoppingCart=" + productsInShoppingCart +
-                '}';
+                '}' + calcTotalPrice();
     }
 
     /**Constructor to create a new cart with zero products and certain ID*/
@@ -36,7 +36,8 @@ public class Cart {
         this.idCart = idCart;
         this.productsInShoppingCart = new LinkedList<>();
     }
-    public Cart(){
+    public Cart() {
+        this.productsInShoppingCart = new LinkedList<>();
     }
 
     /**Standard Getter for the ID of the cart*/
@@ -45,7 +46,7 @@ public class Cart {
     }
 
     /**Returns all products in the cart in a List*/
-    public LinkedList<Product> getProductsInShoppingCart() {
+    public LinkedList<CartItem> getProductsInShoppingCart() {
         return productsInShoppingCart;
     }
 
@@ -53,8 +54,8 @@ public class Cart {
      * @return the total price of all products in the cart*/
     public double calcTotalPrice() {
         double totalPrice = 0;
-        for (Product product : productsInShoppingCart) {
-            totalPrice += product.getPrice();
+        for (CartItem product : productsInShoppingCart) {
+            totalPrice += product.getProduct().getPrice();
         }
         return totalPrice;
     }
@@ -76,6 +77,14 @@ public class Cart {
 
     /**Adds a product to the List*/
     public void addProduct(Product product) {
-        productsInShoppingCart.add(product);
+        for (CartItem item : productsInShoppingCart) {
+            if (item.getProduct().equals(product)) {
+                item.increaseQuantity(1);
+                return;
+            }
+        }
+
+        productsInShoppingCart.add(new CartItem(product, 1));
     }
+
 }

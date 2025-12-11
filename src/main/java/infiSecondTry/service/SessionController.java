@@ -11,6 +11,7 @@ public class SessionController {
     private static final String SESSION_DIR = "Data/SessionIDS/";
     private static final SecureRandom RANDOM = new SecureRandom();
 
+
     static {
         try {
             Files.createDirectories(Paths.get(SESSION_DIR));
@@ -55,7 +56,7 @@ public class SessionController {
         return map;
     }
 
-    public static void saveMap(String sessionId, Map<String, String> map) throws IOException {
+    private static void saveMap(String sessionId, Map<String, String> map) throws IOException {
         Path file = Paths.get(SESSION_DIR, sessionId + ".txt");
         List<String> data = new ArrayList<>();
 

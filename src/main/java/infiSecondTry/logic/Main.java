@@ -34,6 +34,8 @@ public class Main {
             route = "index";
         }
 
+        WarenKorbPage warenKorbPage = new WarenKorbPage(userRepository, productRepository, cartRepository, cgiParameterController);
+
         switch (route) {
             case "logout":
                 ProfilPage profilPage = new ProfilPage(userRepository,productRepository,cartRepository,cgiParameterController);
@@ -46,6 +48,15 @@ public class Main {
             case "login":
                 LoginPage loginPage = new LoginPage(userRepository, productRepository, cartRepository, cgiParameterController);
                 loginPage.loginSite();
+                break;
+            case "cart":
+                warenKorbPage.cartSite();
+                break;
+            case "payment":
+                warenKorbPage.paymentSite();
+                break;
+            case "delete":
+                warenKorbPage.deleteProduct();
                 break;
             default:
                 LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository,cgiParameterController);

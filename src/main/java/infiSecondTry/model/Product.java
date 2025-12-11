@@ -32,10 +32,18 @@ public class Product {
         this.deleted = deleted;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Product product = (Product) obj;
+        return idProduct == product.idProduct; // ID vergleichen!
+    }
 
-
-
-
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idProduct);
+    }
 
     //Standard Getters and Setters
 

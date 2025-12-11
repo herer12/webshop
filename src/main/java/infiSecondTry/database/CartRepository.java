@@ -3,6 +3,8 @@ package infiSecondTry.database;
 
 import infiSecondTry.model.Cart;
 
+import java.io.IOException;
+
 public interface CartRepository {
 
     /**Gets the cart associated with the Id of the User thats being send
@@ -28,5 +30,5 @@ public interface CartRepository {
      * @param productID ID of the product to remove from the cart
      * @return true if the write was successful and if the product was in the cart
      */
-    boolean removeProductFromCart(int cartID, int productID);
+    boolean removeProductFromCart(int cartID, int productID) throws IOException;
 }
