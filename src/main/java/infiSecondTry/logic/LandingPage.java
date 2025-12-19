@@ -5,6 +5,10 @@ import infiSecondTry.database.UserRepository;
 import infiSecondTry.service.CgiParameterController;
 import infiSecondTry.service.HtmlTemplateHandler;
 import infiSecondTry.model.Product;
+import infiSecondTry.service.SessionController;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class LandingPage {
 
@@ -34,18 +38,24 @@ public class LandingPage {
 
     }
 
-    private String buildProductHtml(Product[] products) {
+    private String buildProductHtml(Product[] products) throws IOException {
         StringBuilder sb = new StringBuilder();
+        SessionController.save("debug","productHtml=", Arrays.toString(products));
 
         for (Product p : products) {
             sb.append("<div class='product-card'>")
+
+                    .append("<div class='product-info'>")
                     .append("<div class='product-name'>").append(p.getName()).append("</div>")
                     .append("<div class='product-price'>").append(p.getPrice()).append(" €</div>")
                     .append("<form action='/cgi-bin/Amazon.bat?route=buy' method='POST'>")
                     .append("<input type='hidden' name='id' value='").append(p.getIdProduct()).append("'>")
                     .append("<button class='product-button' type='submit'>In den Warenkorb</button>")
                     .append("</form>")
-                    .append("</div>");
+                    .append("</div>") // product-info
+
+                    .append("</div>"); // product-card
+
         }
 
         return sb.toString();

@@ -25,7 +25,7 @@ public class Product {
     }
 
     /**Standard Constructor for Initializing all variables*/
-    Product(int idProduct, String name, double price, boolean deleted) {
+    public Product(int idProduct, String name, double price, boolean deleted) {
         this.idProduct = idProduct;
         this.name = name;
         this.price = price;

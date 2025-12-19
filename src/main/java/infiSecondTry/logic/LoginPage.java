@@ -35,10 +35,12 @@ public class LoginPage {
             }
             User user = userRepository.getUserWithId(Integer.parseInt(userId));
             if (user == null) {
+                SessionController.save("debug","user=","user.toString()");
                 HtmlTemplateHandler htmlTemplateHandler = new HtmlTemplateHandler("loginWrong.html");
                 htmlTemplateHandler.printHtml();
                 return;
             }
+            SessionController.save("debug","user=",user.toString());
             SessionController.save(cgiParameterController.getSessionId(),"UserId",userId);
             LandingPage landingPage = new LandingPage(userRepository,productRepository,cartRepository,cgiParameterController);
             landingPage.mainPage();

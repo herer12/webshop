@@ -4,6 +4,7 @@ package infiSecondTry.database;
 import infiSecondTry.model.Cart;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public interface CartRepository {
 
@@ -12,7 +13,7 @@ public interface CartRepository {
      * @param userID ID of the User to get the cart for
      * @return Cart Object associated with the User
      */
-    Cart getCartForSpecifiedUser(int userID);
+    Cart getCartForSpecifiedUser(int userID) throws SQLException;
 
     /**Add a specified Product to a certain cart
      * If the cart already contains the product, it will not be added again

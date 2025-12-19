@@ -6,7 +6,12 @@ import infiSecondTry.database.UserRepository;
 import infiSecondTry.database.dummyData.DummyDataCartRepo;
 import infiSecondTry.database.dummyData.DummyDataProductRepo;
 import infiSecondTry.database.dummyData.DummyDataUserRepo;
+import infiSecondTry.database.mySQL.MySqlCartRepo;
+import infiSecondTry.database.mySQL.MySqlProductRepo;
+import infiSecondTry.database.mySQL.MySqlUserRepo;
 import infiSecondTry.service.CgiParameterController;
+
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -17,9 +22,12 @@ public class Main {
 
         CgiParameterController cgiParameterController = new CgiParameterController();
 
-        switch (ConfigHandling.getDataBaseScheme()) {
-//            case "MySQL":
-//                break;
+        switch (ConfigHandling.getDataBaseScheme().trim()) {
+            case "MySQL":
+                userRepository = new MySqlUserRepo();
+                productRepository = new MySqlProductRepo();
+                cartRepository = new MySqlCartRepo();
+                break;
 //            case "PostgreSQL":
 //                break;
             default:

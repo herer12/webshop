@@ -6,10 +6,12 @@ import infiSecondTry.database.UserRepository;
 import infiSecondTry.model.Cart;
 import infiSecondTry.model.CartItem;
 import infiSecondTry.model.Product;
+import infiSecondTry.model.User;
 import infiSecondTry.service.CgiParameterController;
 import infiSecondTry.service.HtmlTemplateHandler;
 import infiSecondTry.service.SessionController;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 public class WarenKorbPage {
@@ -32,17 +34,37 @@ public class WarenKorbPage {
         if (userId == null) {
             LoginPage loginPage = new LoginPage(userRepository, productRepository, cartRepository, cgiParameterController);
             loginPage.loginSite();
+            return;
         }
 
-        String productHtml = buildPaymentInfo(Integer.parseInt(userId));
+        Cart cart = cartRepository.getCartForSpecifiedUser(Integer.parseInt(userId));
+
+        String productHtml = buildPaymentInfo(cart);
         template.replace("PRODUCTS", productHtml);
         template.printHtml();
+
+        User user = userRepository.getUserWithId(Integer.parseInt(userId));
+        user.addMoneyToMoneySpent(cart.calcTotalPrice());
+        userRepository.updateUser(user);
+        try {
+            for (CartItem item : cart.getProductsInShoppingCart()) {
+                for (int i = 0; i < item.getQuantity(); i++){
+                    cartRepository.removeProductFromCart(cart.getIdCart(),item.getProduct().getIdProduct());
+                }
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
     }
 
-    private String buildPaymentInfo(int userId) {
+    private String buildPaymentInfo(Cart cart) {
         StringBuilder paymentInfo = new StringBuilder();
-        Cart cart = cartRepository.getCartForSpecifiedUser(userId);
-        paymentInfo.append(cart.toString());
+        paymentInfo.append("<p>Vielen Dank</p>");
+        paymentInfo.append("<p>Ihre Bestellung wurde erfolgreich abgeschlossen.</p>");
+        paymentInfo.append("<p>Es hat</p>").append(cart.calcTotalPrice()).append("<p>€</p>");
+
         return paymentInfo.toString();
     }
 
@@ -50,7 +72,6 @@ public class WarenKorbPage {
         String userId = SessionController.loadValue(cgiParameterController.getSessionId(), "UserId");
 
         cartRepository.removeProductFromCart(Integer.parseInt(userId), Integer.parseInt(cgiParameterController.getParam("id")));
-
 
         cartSite();
     }
@@ -91,6 +112,8 @@ public class WarenKorbPage {
 
                     .append("</div>");
         }
+        sb.append(cart.calcTotalPrice()).append("€");
+        sb.append("<br>");
 
         return sb.toString();
 

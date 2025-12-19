@@ -15,7 +15,7 @@ public class User {
     /**Birthday of the user*/
     private LocalDate birthday;
     /**SessionID of the user*/
-    private String sessionID;
+    private double moneySpent;
     /**If the User is deleted*/
     private boolean deleted;
 
@@ -24,12 +24,12 @@ public class User {
 
 
     /**Standard Konstruktor for Initializing all variables*/
-    public User(int idUser, String firstName, String lastName, LocalDate birthday, String sessionID){
+    public User(int idUser, String firstName, String lastName, LocalDate birthday, double moneySpent, boolean deleted){
         this.idUser = idUser;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthday = birthday;
-        this.sessionID = sessionID;
+        this.moneySpent = moneySpent;
     }
 
     @Override
@@ -39,9 +39,13 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthday=" + birthday +
-                ", sessionID='" + sessionID + '\'' +
+                ", sessionID='" + moneySpent + '\'' +
                 ", deleted=" + deleted +
                 '}';
+    }
+
+    public void addMoneyToMoneySpent(double money){
+        this.moneySpent += money;
     }
 
 
@@ -63,9 +67,9 @@ public class User {
     public LocalDate getBirthday() {
         return birthday;
     }
-    /**Standard Getter for the sessionID of the user*/
-    public String getSessionID() {
-        return sessionID;
+    /**Standard Getter for the moneySpent of the user*/
+    public double getMoneySpent() {
+        return moneySpent;
     }
     /**Standard Getter if the user is deleted*/
     public boolean isDeleted() { return deleted; }
